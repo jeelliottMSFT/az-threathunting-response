@@ -1,0 +1,16 @@
+// Audit successful Azure subscription-level events – 30d
+AzureActivity
+| where TimeGenerated > ago(30d)
+| where ActivityStatusValue == 'Success'
+| where not(OperationNameValue has_any (@'POLICIES/AUDIT',@'POLICIES/AUDITIFNOTEXISTS'))
+| extend Resource = trim(@’{subscriptionId}', _ResourceId)
+| project
+    TimeGenerated,
+    Caller,
+    CallerIpAddress,
+    OperationNameValue,
+    Resource,
+    ActivityStatusValue,
+    CorrelationId
+| summarize take_any(CorrelationId,*) by TimeGenerated
+| sort by TimeGenerated desc

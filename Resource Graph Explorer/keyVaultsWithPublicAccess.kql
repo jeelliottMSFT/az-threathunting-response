@@ -1,0 +1,11 @@
+//find keyvaults with public network access enabled
+resources
+| where type == "microsoft.keyvault/vaults"
+| extend publicNetworkAccess = properties.publicNetworkAccess
+| extend virtualNetworkRules= properties.networkAcls.virutalNetworkRules
+| extend defaultAction= properties.networkAcls.defaultAction
+| extend ipRules= properties.networkAcls.ipRules
+| extend bypass= properties.networkAcls.bypass
+| project name, subscriptionId, resourceGroup, publicNetworkAccess, virtualNetworkRules, defaultAction, ipRules, bypass
+| where publicNetworkAccess == "Enabled"
+| order by ['name'] asc
