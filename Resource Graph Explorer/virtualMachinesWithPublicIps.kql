@@ -4,7 +4,11 @@ Resources
 | extend nics=array_length(properties.networkProfile.networkInterfaces)
 | mv-expand nic=properties.networkProfile.networkInterfaces
 | where nics == 1 or nic.properties.primary =~ 'true' or isempty(nic)
-| project vmId = id, vmName = name, vmSize=tostring(properties.hardwareProfile.vmSize), nicId = tostring(nic.id)
+| project
+    vmId = id,
+    vmName = name,
+    vmSize=tostring(properties.hardwareProfile.vmSize),
+    nicId = tostring(nic.id)
 | join kind=leftouter (
     Resources
     | where type =~ 'microsoft.network/networkinterfaces'
@@ -12,13 +16,13 @@ Resources
     | mv-expand ipconfig=properties.ipConfigurations
     | where ipConfigsCount == 1 or ipconfig.properties.primary =~ 'true'
     | project nicId = id, publicIpId = tostring(ipconfig.properties.publicIPAddress.id))
-on nicId
+    on nicId
 | project-away nicId1
 | summarize by vmId, vmName, vmSize, nicId, publicIpId
 | join kind=leftouter (
     Resources
     | where type =~ 'microsoft.network/publicipaddresses'
     | project publicIpId = id, publicIpAddress = properties.ipAddress)
-on publicIpId
+    on publicIpId
 | project-away publicIpId1
-| where isnotempty( publicIpAddress)
+| where isnotempty(publicIpAddress)

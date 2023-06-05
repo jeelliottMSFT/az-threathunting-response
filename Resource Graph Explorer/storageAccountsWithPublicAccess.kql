@@ -2,9 +2,9 @@
 resources
 | where type == "microsoft.storage/storageaccounts"
 | project
-name,
-properties.allowBlobPublicAccess,
-publicAccess= properties['publicNetworkAccess'] ,
-properties.minimumTlsVersion,
-subscriptionId
+    name,
+    properties.allowBlobPublicAccess,
+    publicAccess= properties['publicNetworkAccess'],
+    properties.minimumTlsVersion,
+    subscriptionId
 | where publicAccess == "Enabled"

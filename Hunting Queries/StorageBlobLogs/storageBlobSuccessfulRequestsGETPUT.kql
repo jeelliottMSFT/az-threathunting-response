@@ -5,5 +5,18 @@ StorageBlobLogs
 | where OperationName has_any (operationsOfInterest) // define operations 
 | where not(StatusCode startswith ('4')) // include only successful
 | where ResponseBodySize > 140958 // filter for GET operations GT size
-| project TimeGenerated, AccountName, Protocol, OperationName, AuthenticationType, StatusCode, StatusText, CallerIpAddress, Uri, RequestHeaderSize, ResponseHeaderSize, RequestBodySize, ResponseBodySize
+| project
+    TimeGenerated,
+    AccountName,
+    Protocol,
+    OperationName,
+    AuthenticationType,
+    StatusCode,
+    StatusText,
+    CallerIpAddress,
+    Uri,
+    RequestHeaderSize,
+    ResponseHeaderSize,
+    RequestBodySize,
+    ResponseBodySize
 | sort by TimeGenerated desc

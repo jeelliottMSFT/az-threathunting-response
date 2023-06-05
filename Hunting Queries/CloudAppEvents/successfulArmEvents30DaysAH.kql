@@ -1,18 +1,18 @@
 // Audit successful Azure subscription-level events – 30d
 CloudAppEvents
-| where Timestamp  > ago(30d)
+| where Timestamp  > ago(30d)
 | where Application == 'Microsoft Azure'
 | where isnotempty(ObjectName)
 | parse RawEventData.claims with * @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" AccountUpn "uti" *
 | extend Status = RawEventData.status
 | where Status == 'Succeeded'
 | project 
-    format_datetime(Timestamp, 'yyyy-MM-dd HH:mm:ss'), 
-    Application,
-    ActionType,
-    AccountUpn,
-    IPAddress,
-    ObjectName,
-    Status,
-    RawEventData
+    format_datetime(Timestamp, 'yyyy-MM-dd HH:mm:ss'), 
+    Application,
+    ActionType,
+    AccountUpn,
+    IPAddress,
+    ObjectName,
+    Status,
+    RawEventData
 | sort by Timestamp desc

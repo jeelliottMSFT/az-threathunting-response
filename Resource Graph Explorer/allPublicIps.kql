@@ -1,19 +1,22 @@
 //Find all public ips (assigned or not)
-Resources | where type =~ "Microsoft.Network/networkInterfaces"
- | mv-expand properties.ipConfigurations
- | where isnotempty(properties_ipConfigurations.properties.publicIPAddress.id)
- | extend publicIpId = tostring(properties_ipConfigurations.properties.publicIPAddress.id)
-  | join (
-	Resources | where type =~ "microsoft.network/publicipaddresses"
- ) on $left.publicIpId == $right.id
- | extend ipAddress = tostring(properties1.ipAddress)
- | extend publicIPAllocationMethod = tostring(properties1.publicIPAllocationMethod)
- | extend publicIpName = tostring(name1)
- | extend vmId = tostring(properties.virtualMachine.id)
- | where notempty(vmId)
-  | join  (
-	 Resources | where type == "microsoft.compute/virtualmachines"
- ) on $left.vmId == $right.id
+Resources
+| where type =~ "Microsoft.Network/networkInterfaces"
+| mv-expand properties.ipConfigurations
+| where isnotempty(properties_ipConfigurations.properties.publicIPAddress.id)
+| extend publicIpId = tostring(properties_ipConfigurations.properties.publicIPAddress.id)
+| join (
+    Resources | where type =~ "microsoft.network/publicipaddresses"
+    )
+    on $left.publicIpId == $right.id
+| extend ipAddress = tostring(properties1.ipAddress)
+| extend publicIPAllocationMethod = tostring(properties1.publicIPAllocationMethod)
+| extend publicIpName = tostring(name1)
+| extend vmId = tostring(properties.virtualMachine.id)
+| where notempty(vmId)
+| join  (
+    Resources | where type == "microsoft.compute/virtualmachines"
+    )
+    on $left.vmId == $right.id
 | extend name = name2
 | extend resourceGroup = resourceGroup2
-| project name, resourceGroup,publicIpName, publicIPAllocationMethod, ipAddress
+| project name, resourceGroup, publicIpName, publicIPAllocationMethod, ipAddress
