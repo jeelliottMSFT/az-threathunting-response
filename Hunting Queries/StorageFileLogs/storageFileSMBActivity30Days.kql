@@ -1,0 +1,7 @@
+// File Share Analysis – SMB activity in last 30 days
+StorageFileLogs
+| where TimeGenerated > ago(30d)
+| where not(StatusCode contains ('-')) // filter noise
+| where Protocol == 'SMB'
+| project TimeGenerated, AccountName, Protocol, OperationName, AuthenticationType, StatusCode, CallerIpAddress, Uri, RequestHeaderSize, ResponseHeaderSize, SmbCommandDetail, SmbCommandMinor, RequestBodySize, ResponseBodySize
+| sort by TimeGenerated desc
